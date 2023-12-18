@@ -1,0 +1,11 @@
+# test outputs
+src/transcript
+src/output_randomize_test.txt
+src/test_results.txt
+
+# run files
+src/questa.tops
+src/dump.vcd
+
+# compiled files
+src/work

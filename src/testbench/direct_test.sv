@@ -199,6 +199,11 @@ task direct_test();
       test_seq1();
       test_seq2();
     join
+
+    // Finish test
+    @(posedge clk iff are_queues_empty())
+      #100
+    program_finish = '1;
   end 
 endtask; // direct_test
 

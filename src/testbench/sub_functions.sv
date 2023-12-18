@@ -123,7 +123,7 @@ task capture_progress(test_params_t tp);
     automatic real Ac = tp.Ac;
 
     static longint test_count = 0;
-    automatic longint f_data = $fopen("data_test.txt", "a+");
+    automatic longint f_data = $fopen("output_randomize_test.txt", "a");
     automatic real r_full_av_delay = 0;
     automatic real w_full_av_delay = 0;
 
@@ -218,7 +218,7 @@ endtask;  // chek_point
 
 task test_finish(longint test_id, string test_name, longint result);
   begin
-    automatic longint fd = $fopen("global.txt", "a");
+    automatic longint fd = $fopen("test_results.txt", "a");
 
     if (1 == result) begin
       $fdisplay(fd, "test_id=%-5d test_name: %15s         TEST_PASSED", test_id, test_name);
