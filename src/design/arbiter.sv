@@ -15,7 +15,6 @@ module arbiter #(
 );
 
   reg [N-1:0] pointer_req;
-  reg [N-1:0] next_grant;
 
   wire [2*N-1:0] double_req = {req, req};
   wire [2*N-1:0] double_grant = double_req & ~(double_req - pointer_req);
