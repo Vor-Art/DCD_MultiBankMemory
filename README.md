@@ -11,8 +11,8 @@ The project explores the concept of multibank memory systems as a particular sol
 
 ## Contents
 
-- `src/design`: Source code for the multibank memory module.
-- `src/testbench`: Files for verification and throughput examination.
+- `src/design/`: Source code for the multibank memory module.
+- `src/testbench/`: Files for verification and throughput examination.
 - `docs/`: Documentation and additional resources.
 
 ## Project Details
