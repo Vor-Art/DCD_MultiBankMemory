@@ -1,6 +1,3 @@
-// Code your testbench here
-// or browse Examples
-
 `default_nettype none
 
 `include "transaction_pkg.sv"
@@ -12,7 +9,7 @@ import golden_memory_pkg::*;
 import params_pkg::*;
 
 module tb ();
-  
+
   // ............Variable declaration block...............//
   string    test_name[3:0]=
   {
@@ -22,26 +19,26 @@ module tb ();
     "direct" 
   };
 
-  logic               clk=0;
-  logic               rst;
+  logic       clk = 0;
+  logic       rst;
 
-  longint                 cnt_wr=0;
-  longint                 cnt_rd=0;
-  longint                 cnt_ok=0;  
-  longint                 cnt_error=0;
+  longint     cnt_wr = 0;
+  longint     cnt_rd = 0;
+  longint     cnt_ok = 0;
+  longint     cnt_error = 0;
 
-  longint                 show_ok=0;
-  longint                 show_error=0;
+  longint     show_ok = 0;
+  longint     show_error = 0;
 
-  longint                 test_id=0;
-  logic               test_start=0;
-  logic               test_timeout=0;
-  logic               program_finish=0;
+  longint     test_id = 0;
+  logic       test_start = 0;
+  logic       test_timeout = 0;
+  logic       program_finish = 0;
 
-  longint                 tick_current=0;
+  longint     tick_current = 0;
 
-  golden_memory_t     golden_memory;
-  test_params_t       curr_test_params;
+  golden_memory_t golden_memory;
+  test_params_t   curr_test_params;
 
   type_transaction qa_transaction_drive_rd  [REQUESTERS-1:0]  [$];
   type_transaction qa_transaction_check_rd  [REQUESTERS-1:0]  [$];
@@ -51,11 +48,11 @@ module tb ();
   type_transaction qa_transaction_drive_wr  [REQUESTERS-1:0]  [$];
   type_transaction current_drive_wr         [REQUESTERS-1:0];
 
-  longint qa_rd_start                           [REQUESTERS-1:0]  [$];
+  longint qa_rd_start[REQUESTERS-1:0][$];
 
   type_uut   u  [REQUESTERS-1:0];
   type_stat  st [REQUESTERS-1:0];
-  
+
   //to good display on EPWave
   wire [15:0] r2_r_addr = u[2].r_addr;
   wire [15:0] r1_r_addr = u[1].r_addr;
@@ -102,95 +99,84 @@ module tb ();
   wire [REQUESTERS-1:0]                     general_w_ready; 
 
   generate
-    for(genvar i = 0; i < REQUESTERS; i ++ ) begin
-      assign general_r_addr[i]   =  u[i].r_addr;    
-      assign general_r_avalid[i] =  u[i].r_avalid;      
-      assign u[i].r_dvalid       =  general_r_dvalid[i];
-      assign u[i].r_data         =  general_r_data[i];
-      assign u[i].r_aready       =  general_r_aready[i];
+    for (genvar i = 0; i < REQUESTERS; i++) begin
+      assign general_r_addr[i]   = u[i].r_addr;
+      assign general_r_avalid[i] = u[i].r_avalid;
+      assign u[i].r_dvalid       = general_r_dvalid[i];
+      assign u[i].r_data         = general_r_data[i];
+      assign u[i].r_aready       = general_r_aready[i];
 
-      assign general_w_addr[i]   =  u[i].w_addr;
-      assign general_w_data[i]   =  u[i].w_data;
-      assign general_w_valid[i]  =  u[i].w_valid;   
-      assign u[i].w_ready        =  general_w_ready[i];     
+      assign general_w_addr[i]   = u[i].w_addr;
+      assign general_w_data[i]   = u[i].w_data;
+      assign general_w_valid[i]  = u[i].w_valid;
+      assign u[i].w_ready        = general_w_ready[i];
     end
   endgenerate
 
   //------------
 
-  multibank_memory
-  #(
-    .READ_PORTS     (   REQUESTERS  ), 
-    .WRITE_PORTS    (   REQUESTERS  ),
-    .DATA_WIDTH     (   DATA_WIDTH  ),
-    .ADDR_WIDTH     (   ADDR_WIDTH  ),
-    .BANKS          (   BANKS       )
-  ) uut
-  (
-    
-    .r_addr         (   general_r_addr      ),
-    .r_avalid       (   general_r_avalid    ),
-    .r_dvalid       (   general_r_dvalid    ),
-    .r_data         (   general_r_data      ),
-    .r_aready       (   general_r_aready    ),
+  multibank_memory #(
+    .READ_PORTS   (  REQUESTERS  ), 
+    .WRITE_PORTS  (  REQUESTERS  ),
+    .DATA_WIDTH   (  DATA_WIDTH  ),
+    .ADDR_WIDTH   (  ADDR_WIDTH  ),
+    .BANKS        (  BANKS       )
+  ) uut (
+    .r_addr       (  general_r_addr    ),
+    .r_avalid     (  general_r_avalid  ),
+    .r_dvalid     (  general_r_dvalid  ),
+    .r_data       (  general_r_data    ),
+    .r_aready     (  general_r_aready  ),
 
-    .w_addr         (   general_w_addr      ),
-    .w_data         (   general_w_data      ),
-    .w_valid        (   general_w_valid     ),
-    .w_ready        (   general_w_ready     ),
+    .w_addr       (  general_w_addr    ),
+    .w_data       (  general_w_data    ),
+    .w_valid      (  general_w_valid   ),
+    .w_ready      (  general_w_ready   ),
 
     .*
-
   );
 
-  
-  
-  
-  
-  
+
+
   //..............Generations block....................
   // Fill memory 
-  for( genvar jj=0; jj < BANKS; jj++ )
-    initial begin
-      for( longint ii=0; ii < BANK_SIZE; ii++ )
-        uut.bank[jj].memory.memory[ii] = ii + BANK_SIZE * jj;
-    end 
+  for (genvar jj = 0; jj < BANKS; jj++)
+  initial begin
+    for (longint ii = 0; ii < BANK_SIZE; ii++) 
+      uut.bank[jj].memory.memory[ii] = ii + BANK_SIZE * jj;
+  end
   //------------
-  genvar ii;
-  generate
-    for( ii=0; ii<REQUESTERS; ii++ ) begin
+  genvar ii; generate
+    for (ii = 0; ii < REQUESTERS; ii++) begin
       initial begin
-        u[ii].r_avalid          <= #1 '0;
-        u[ii].r_addr            <= #1 '0;
-        while(1) begin
+        u[ii].r_avalid <= #1 '0;
+        u[ii].r_addr   <= #1 '0;
+        while (1) begin
 
-          while(qa_transaction_drive_rd[ii].size()==0) #1;
+          while (qa_transaction_drive_rd[ii].size() == 0) #1;
 
           current_drive_rd[ii] = qa_transaction_drive_rd[ii].pop_front();
 
-          if( EXIT == current_drive_rd[ii].op ) break;  //EXIT
-          if( SYNC == current_drive_rd[ii].op )         //SYNC      
-            begin
-              @(posedge clk iff tick_current==current_drive_rd[ii].sync_tick );
-              show_ok=0;
-              show_error=0;
-              continue;
-            end
-          if( INFO == current_drive_rd[ii].op ) begin   // INFO
-            curr_test_params <=#1 current_drive_rd[ii].tst_prm;
+          if (EXIT == current_drive_rd[ii].op) break; //EXIT
+          if (SYNC == current_drive_rd[ii].op) begin  //SYNC      
+            @(posedge clk iff tick_current == current_drive_rd[ii].sync_tick);
+            show_ok = 0;
+            show_error = 0;
+            continue;
+          end
+          if (INFO == current_drive_rd[ii].op) begin  // INFO
+            curr_test_params <= #1 current_drive_rd[ii].tst_prm;
             @(posedge clk); continue;
           end
-          if( CHECKPOINT == current_drive_rd[ii].op ) begin // CHECKPOINT
-            st[ii].r_subtest_finish<= #1 1;
-            @(negedge rst);
-            continue;
+          if (CHECKPOINT == current_drive_rd[ii].op) begin  // CHECKPOINT
+            st[ii].r_subtest_finish <= #1 1;
+            @(negedge rst); continue;
           end
 
           st[ii].r_start_time <= #1 (-1 == st[ii].r_start_time)? tick_current : st[ii].r_start_time;
 
-          u[ii].r_addr   <= #1 current_drive_rd[ii].addr;
+          u[ii].r_addr <= #1 current_drive_rd[ii].addr;
           u[ii].r_avalid <= #1 '1;
-          
 
           qa_rd_start[ii].push_back(tick_current);
 
@@ -199,7 +185,7 @@ module tb ();
           u[ii].r_avalid <= #1 '0;
           u[ii].r_addr   <= #1 '0;
 
-          repeat(current_drive_rd[ii].delay) @(posedge clk);
+          repeat (current_drive_rd[ii].delay) @(posedge clk);
 
         end
       end
@@ -207,53 +193,49 @@ module tb ();
   endgenerate
 
   generate
-    for( ii=0; ii<REQUESTERS; ii++ ) begin
+    for (ii = 0; ii < REQUESTERS; ii++) begin
 
       initial begin
-        u[ii].w_valid       <= #1 '0;
-        u[ii].w_addr        <= #1 '0;
-        u[ii].w_data        <= #1 '0;
-        while(1) begin
+        u[ii].w_valid <= #1 '0;
+        u[ii].w_addr  <= #1 '0;
+        u[ii].w_data  <= #1 '0;
+        while (1) begin
 
-          while(qa_transaction_drive_wr[ii].size()<=0) #1;
+          while (qa_transaction_drive_wr[ii].size() <= 0) #1;
 
           current_drive_wr[ii] = qa_transaction_drive_wr[ii].pop_front();
 
-          if( EXIT == current_drive_wr[ii].op ) break;  //EXIT 
-          if( SYNC == current_drive_wr[ii].op ) begin   //SYNC 
-            @(posedge clk iff tick_current==current_drive_wr[ii].sync_tick )
-            continue;
+          if (EXIT == current_drive_wr[ii].op) break; //EXIT 
+          if (SYNC == current_drive_wr[ii].op) begin  //SYNC 
+            @(posedge clk iff tick_current == current_drive_wr[ii].sync_tick) continue;
           end
-          if( INFO == current_drive_wr[ii].op ) begin   // INFO
-            curr_test_params <=#1 current_drive_wr[ii].tst_prm;
+          if (INFO == current_drive_wr[ii].op) begin  // INFO
+            curr_test_params <= #1 current_drive_wr[ii].tst_prm;
             @(posedge clk) continue;
           end
-          if( CHECKPOINT == current_drive_wr[ii].op ) begin // CHECKPOINT
-            st[ii].w_subtest_finish<= #1 1;
-            @(negedge rst)
-            continue;
+          if (CHECKPOINT == current_drive_wr[ii].op) begin  // CHECKPOINT
+            st[ii].w_subtest_finish <= #1 1;
+            @(negedge rst) continue;
           end
 
           st[ii].w_start_time <= #1 (-1 == st[ii].w_start_time)? tick_current : st[ii].w_start_time;
 
-          u[ii].w_addr   <= #1 current_drive_wr[ii].addr;
-          u[ii].w_data   <= #1 current_drive_wr[ii].data;
-          u[ii].w_valid  <= #1 '1;
-          st[ii].w_start =  tick_current; 
+          u[ii].w_addr  <= #1 current_drive_wr[ii].addr;
+          u[ii].w_data  <= #1 current_drive_wr[ii].data;
+          u[ii].w_valid <= #1 '1;
+          st[ii].w_start = tick_current;
 
           @(posedge clk iff u[ii].w_ready & u[ii].w_valid)
-
-          if( st[ii].w_cnt < MAX_TRANSACTION ) 
-            begin
-              st[ii].w_delay[st[ii].w_cnt] =  tick_current - st[ii].w_start; 
+            if (st[ii].w_cnt < MAX_TRANSACTION) begin
+              st[ii].w_delay[st[ii].w_cnt] = tick_current - st[ii].w_start;
               st[ii].w_cnt++;
             end
 
-          u[ii].w_valid  <= #1 '0;
-          u[ii].w_addr   <= #1 '0;
-          u[ii].w_data   <= #1 '0;
+          u[ii].w_valid <= #1 '0;
+          u[ii].w_addr  <= #1 '0;
+          u[ii].w_data  <= #1 '0;
 
-          repeat(current_drive_wr[ii].delay) @(posedge clk);
+          repeat (current_drive_wr[ii].delay) @(posedge clk);
 
         end
       end
@@ -262,61 +244,57 @@ module tb ();
 
   // Monitor
   generate
-    for( ii=0; ii<REQUESTERS; ii++ ) begin
+    for (ii = 0; ii < REQUESTERS; ii++) begin
 
-      always @(posedge clk iff('1==u[ii].r_dvalid) ) begin
+      always @(posedge clk iff ('1 == u[ii].r_dvalid)) begin
 
-        if( 0==qa_transaction_check_rd[ii].size() ) begin
-          if( cnt_error < DISP_QUANTITY ) begin
-            if(DISPL) $display("Error: unexpected read data for port %d. read: %h. clk: %p", ii, u[ii].r_data, tick_current);
+        if (0 == qa_transaction_check_rd[ii].size()) begin
+          if (cnt_error < DISP_QUANTITY) begin
+            if (DISPL) $display("Error: unexpected read data for port %d. read: %h. clk: %p", ii, u[ii].r_data, tick_current);
           end
           cnt_error++;
         end else begin
 
           st[ii].r_start = qa_rd_start[ii].pop_front();
-          if( st[ii].r_cnt<MAX_TRANSACTION ) begin
+          if (st[ii].r_cnt < MAX_TRANSACTION) begin
             st[ii].r_delay[st[ii].r_cnt] = tick_current - st[ii].r_start;
             st[ii].r_cnt++;
           end
 
           current_check_rd[ii] = qa_transaction_check_rd[ii].pop_front();
-          golden_memory.get_data( tick_current, ii, current_check_rd[ii].addr, 
-                                 mask_avaliable[ii], expect_data[ii]
-                                );
-          flag_eq[ii]=0;
-          for( longint jj=0; jj<2*REQUESTERS; jj++) begin
-            if( mask_avaliable[ii][jj] &&  
-               (u[ii].r_data == expect_data[ii][jj] )
-              ) begin
-              flag_eq[ii]=1;
+          golden_memory.get_data(tick_current, ii, current_check_rd[ii].addr, mask_avaliable[ii],expect_data[ii]);
+          flag_eq[ii] = 0;
+          for (longint jj = 0; jj < 2 * REQUESTERS; jj++) begin
+            if (mask_avaliable[ii][jj] && (u[ii].r_data == expect_data[ii][jj])) begin
+              flag_eq[ii] = 1;
               break;
             end
           end
 
-          if( 1==flag_eq[ii] ) begin
-            if( show_ok < DISP_QUANTITY ) begin
-              if(DISPL)  $display("Read: ok: %-d error: %-d  port: %d  adr=%h read: %h mask_avaliable: %h  tick: %h - Ok",
+          if (1 == flag_eq[ii]) begin
+            if (show_ok < DISP_QUANTITY) begin
+              if (DISPL)  $display("Read: ok: %-d error: %-d  port: %d  adr=%h read: %h mask_avaliable: %h  tick: %h - Ok",
                        cnt_ok, cnt_error, ii, current_check_rd[ii].addr, u[ii].r_data, mask_avaliable[ii], tick_current
                       ); 
-              for( longint jj=0; jj<2*REQUESTERS; jj++) begin
-                if( mask_avaliable[ii][jj] )  
-                  if(DISPL)  $display( "   expect data: %h", expect_data[ii][jj] );
+              for (longint jj = 0; jj < 2 * REQUESTERS; jj++) begin
+                if (mask_avaliable[ii][jj])
+                  if (DISPL) $display("   expect data: %h", expect_data[ii][jj]);
+              end
 
-              end 
               show_ok++;
             end
             cnt_ok++;
           end else begin
-            if(  show_error < DISP_QUANTITY ) begin
-              if(DISPL)  $display("Read: ok: %-d error: %-d  port: %d adr: %h read: %h  mask_avaliable: %h  tick: %h - Error",
+            if (show_error < DISP_QUANTITY ) begin
+              if (DISPL) $display("Read: ok: %-d error: %-d  port: %d adr: %h read: %h  mask_avaliable: %h  tick: %h - Error",
                        cnt_ok, cnt_error, ii, current_check_rd[ii].addr, u[ii].r_data, mask_avaliable[ii], tick_current
                       );
-              for( longint jj=0; jj<2*REQUESTERS; jj++) begin
-                if( mask_avaliable[ii][jj] )  
-                  if(DISPL) $display( "   expect data: %h", expect_data[ii][jj] );
-
+              for (longint jj = 0; jj < 2 * REQUESTERS; jj++) begin
+                if (mask_avaliable[ii][jj])
+                  if (DISPL) $display("   expect data: %h", expect_data[ii][jj]);
               end
-              show_error++; 
+
+              show_error++;
             end
             cnt_error++;
           end
@@ -325,27 +303,24 @@ module tb ();
       end
 
       // Golden Memory
-      always @(posedge clk iff u[ii].w_valid & u[ii].w_ready ) begin
-        golden_memory.write_mem( tick_current, ii, u[ii].w_addr, u[ii].w_data );
+      always @(posedge clk iff u[ii].w_valid & u[ii].w_ready) begin
+        golden_memory.write_mem(tick_current, ii, u[ii].w_addr, u[ii].w_data);
       end
 
     end
   endgenerate
-  
-  
-  
-  
-  
-  
+
+
+
   //..............Always' block.................
   always #5 clk = ~clk;
-  always @(posedge clk)  tick_current <= #1 tick_current+1;  
-  
-  
+  always @(posedge clk) tick_current <= #1 tick_current + 1;
+
+
   //.................Initials' block............
-  `include "direct_test.sv" //  is it crutch? - Yes it is!  
-  `include "randomize.sv" //  it's  too  
-  `include "sub_functions.sv" //  and this  
+  `include "direct_test.sv"  //  is it crutch? - Yes it is!  
+  `include "randomize.sv"  //  it's  too  
+  `include "sub_functions.sv"  //  and this  
 
   initial begin
     $dumpfile("dump.vcd");
@@ -353,15 +328,15 @@ module tb ();
   end
 
   initial begin
-    repeat(TIME_OUT) #1;
-    $display( "Timeout");
+    repeat (TIME_OUT) #1;
+    $display("Timeout");
     test_timeout = '1;
   end
 
   initial begin
     while (1) begin
       @(posedge clk iff are_ports_done())
-        
+
       capture_progress(curr_test_params);
       restart();
     end
@@ -372,7 +347,7 @@ module tb ();
     @(posedge clk iff test_start=='1)
     $display("Test %p: %s", test_id, test_name[test_id]);
     
-    case( test_id )
+    case (test_id)
       0: direct_test();
       1: test_randomize();
       2: test_randomize_split_full();
@@ -380,29 +355,29 @@ module tb ();
     endcase
   end
 
-  initial begin  
-    static longint args=-1;
-    if( $value$plusargs( "test_id=%0d", args )) begin
-      if( args>=0 && args< $size(test_name) ) test_id = args;
+  initial begin
+    static longint args = -1;
+    if ($value$plusargs("test_id=%0d", args)) begin
+      if (args >= 0 && args < $size(test_name)) test_id = args;
     end
 
-    $display("Test multi_memory test_id=%p  name: %p", test_id, test_name[test_id] );
+    $display("Test multi_memory test_id=%p  name: %p", test_id, test_name[test_id]);
 
     golden_memory = new();
     restart();
 
-    @(posedge clk iff program_finish =='1 || test_timeout=='1)
-    if( test_timeout ) cnt_error++;
-    
-    $display( "cnt_wr: %d", cnt_wr );
-    $display( "cnt_rd: %d", cnt_rd );
-    $display( "cnt_ok: %d", cnt_ok );
-    $display( "cnt_error: %d", cnt_error );
+    @(posedge clk iff program_finish == '1 || test_timeout == '1)
+    if (test_timeout) cnt_error++;
+
+    $display("cnt_wr: %d", cnt_wr);
+    $display("cnt_rd: %d", cnt_rd);
+    $display("cnt_ok: %d", cnt_ok);
+    $display("cnt_error: %d", cnt_error);
     $display("");
-    if( 0==cnt_error && cnt_ok>0 )
-      test_finish( test_id, test_name[test_id], 1 );  // test passed
-    else
-      test_finish( test_id, test_name[test_id], 0 );  // test failed
+    if (0 == cnt_error && cnt_ok > 0) 
+      test_finish(test_id, test_name[test_id], 1);  // test passed
+    else 
+      test_finish(test_id, test_name[test_id], 0);  // test failed
   end
 
 

@@ -203,5 +203,4 @@ task direct_test();
 endtask; // direct_test
 
 
-
 `endif // DIRECT_TEST_SV
