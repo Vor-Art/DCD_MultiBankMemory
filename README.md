@@ -2,7 +2,7 @@
 
 ## Overview
 
-![multibank](/image/preview.png)
+![multibank](https://github.com/Vor-Art/DCD_MultiBankMemory/blob/master/images/preview.png?raw=true)
 
 The project explores the concept of multibank memory systems as a particular solution of multiport memory problem. The aims of the project is to find the optimal number of banks to minimize conflicts and maximize throughput, as described in the article _"Multibank memory bandwidth analysis in on-chip system."_ [(link)](https://www.researchgate.net/publication/355220832_Multibank_memory_bandwidth_analysis_in_on-chip_system?_tp=eyJjb250ZXh0Ijp7ImZpcnN0UGFnZSI6ImhvbWUiLCJwYWdlIjoicHJvZmlsZSIsInByZXZpb3VzUGFnZSI6ImhvbWUiLCJwb3NpdGlvbiI6InBhZ2VDb250ZW50In19)
 
