@@ -318,8 +318,8 @@ module tb ();
 
 
   //.................Initials' block............
-  `include "direct_test.sv"  //  is it crutch? - Yes it is!  
-  `include "randomize.sv"  //  it's  too  
+  `include "tests/0_direct_test.sv"  //  is it crutch? - Yes it is!  
+  `include "tests/1_randomize_test.sv"  //  it's  too  
   `include "sub_functions.sv"  //  and this  
 
   initial begin
